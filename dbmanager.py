@@ -59,10 +59,25 @@ def dateConvert(datestring):
 
 def scheduleVacation():
     empnum = int(input('Enter Employee Number > '))
-    numdays = int(input('Enter Total Days Requested > '))
-    if numdays >= 1:
+    numdays = float(input('Enter Total Days Requested > '))
+    if numdays > 1:
         strtdte = input('Enter Start Date --MM/DD/YYYY-- > ')
         strtdteF = dateConvert(strtdte)
         countdwn = numdays
-        Vacation.create(employeeNumber=empnum, vacationDate=strtdte, hoursUsed=8)
+        Vacation.create(employeeNumber=empnum, vacationDate=strtdteF, hoursUsed=8)
+        while countdwn:
+            countdwn -= 1
+            if strtdteF.weekday() < 3:
+                strtdteF += datetime.timedelta(days=1)
+            else:
+                strtdteF += datetime.timedelta(days=3)
+            Vacation.create(employeeNumber=empnum, vacationDate=strtdteF, hoursUsed=8)            
+    else:
+        strtdte = input("Enter Requested Vacation Date > ")
+        strtdteF = dateConvert(strtdte)
+        if numdays == 1:
+            Vacation.create(employeeNumber=empnum, vacationDate=strtdteF, hoursUsed=8)
+        else:
+            Vacation.create(employeeNumber=empnum, vacationDate=strtdteF, hoursUsed=4)
+
 
