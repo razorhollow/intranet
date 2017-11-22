@@ -1,9 +1,22 @@
 #!python3
 #dbmanager.py - program for manipulating sqlite database
 
-import datetime, os, re 
+import datetime, os
 
 from peewee import *
+
+preAccrual = {
+    32: [76.39, "Doland"], 
+    59: [100.928, "Wheeler"], 
+    25: [169.232, "Ketrow"], 
+    24: [148.008, "Gaylord_Greg"],
+    39: [91.852, "Bernard"],
+    65: [13.842, "Ballard"],
+    37: [84.912, "McLaughlin"],
+    66: [3.845, "Saxe"],
+    47: [88.286, "Rounds"],
+    23: [108.476, "Gaylord_Garan"],
+    64: [5.383, "Williams"]}
 
 db = SqliteDatabase('Employees')
 
@@ -31,19 +44,24 @@ def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def addEmployee():
+     clear()
+    print("Add A New Employee")
+    print("+"*50)
     empnum = int(input("Enter Employee Number > "))
     lstnm = input("Enter Employee Last Name > ")
     fstnm = input("Enter Employee First Name > ")
     hrdt = input("Enter Date of Hire --MM/DD/YYYY-- > ")
+    hrdtF = dateConvert(hrdt)
     pwd = input("Enter User Password > ")
     pwd2 = input("Re-enter Password > ")
     while pwd != pwd2:
         print("Password Mismatch...try again")
         pwd = input("Enter User Password > ")
         pwd2 = input("Re-enter Password > ")
+    preAcc = input("Enter Accrued Vacation as of 2/6/2017")    
     clear()
     print('Adding Employee to Database...')
-    Employee.create(employeeNumber=empnum, lastName=lstnm, firstName=fstnm, hireDate=hrdt, password=pwd)
+    Employee.create(employeeNumber=empnum, lastName=lstnm, firstName=fstnm, hireDate=hrdtF, password=pwd)
     time.sleep(1)
     print('Employee Successfully Added')
     time.sleep(1)
@@ -58,6 +76,9 @@ def dateConvert(datestring):
 
 
 def scheduleVacation():
+    clear()
+    print("Add Vacation Record")
+    print("+"*50)
     empnum = int(input('Enter Employee Number > '))
     numdays = float(input('Enter Total Days Requested > '))
     if numdays > 1:
@@ -79,5 +100,10 @@ def scheduleVacation():
             Vacation.create(employeeNumber=empnum, vacationDate=strtdteF, hoursUsed=8)
         else:
             Vacation.create(employeeNumber=empnum, vacationDate=strtdteF, hoursUsed=4)
+
+
+def accrualCalc(empnum):
+    accrualStart = datetime.datetime(2017, 2, 6)
+
 
 
