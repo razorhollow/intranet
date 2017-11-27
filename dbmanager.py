@@ -18,7 +18,7 @@ preAccrual = {
     23: [108.476, "Gaylord_Garan"],
     64: [5.383, "Williams"]}
 
-db = SqliteDatabase('Employees')
+db = SqliteDatabase('Employees.db')
 
 class BaseModel(Model):
     class Meta:
@@ -36,9 +36,13 @@ class Vacation(BaseModel):
     vacationDate = Datefield(null=False)
     hoursUsed = IntegerField(max_length=1, default=8)
 
+class HolidayCalendar(BaseModel):
+    holidayDate = DateTimeField()
+    description = TextField()
+
 def initialize():
     db.connect()
-    db.create_tables([Employee, Vacation], safe=True)
+    db.create_tables([Employee, Vacation, HolidayCalendar], safe=True)
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -74,6 +78,19 @@ def dateConvert(datestring):
     except ValueError:
         print("Error: Incorrect date Format.")
 
+def addHoliday():
+    holidate = input("Enter Date of Holiday --MM/DD/YYYY-- >> ")
+    hrdtF = dateConvert(holidate)
+    holDesc = input('Enter Holiday Description >> ')
+    HolidayCalendar.create(holidayDate=hrdtF, description=holDesc)
+
+def viewCalendar():
+    for holiday in HolidayCalendar.select():
+        displayDate = holiday.holidayDate
+        description = holiday.description
+        print("{} | {}".format(displayDate.strftime("%m/%d/%Y"), description))
+    input("\n\n\nPress Enter When Finished")
+
 
 def scheduleVacation():
     clear()
@@ -101,9 +118,20 @@ def scheduleVacation():
         else:
             Vacation.create(employeeNumber=empnum, vacationDate=strtdteF, hoursUsed=4)
 
+def accrualRate(hireDate):
+    today = datetime.datetime.now()
+    td = today - hireDate
+    #accrual rate, in hours per day, after 5 years of service (3 weeks)
+    if td.days > 1825:
+        return .32876712
+    #accrual rate, in hours per day, after 3 years of service (2 weeks)
+    elif td.days > 1095:
+        return .21917808
+    #accrual rate, in hours per day, starting (1 week)
+    else
+        return .10958904
 
 def accrualCalc(empnum):
     accrualStart = datetime.datetime(2017, 2, 6)
-
 
 
