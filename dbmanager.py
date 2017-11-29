@@ -18,7 +18,7 @@ preAccrual = {
     23: [108.476, "Gaylord_Garan"],
     64: [5.383, "Williams"]}
 
-db = SqliteDatabase('Employees.db')
+db = SqliteDatabase('TimeOff.db')
 
 class BaseModel(Model):
     class Meta:
@@ -37,7 +37,7 @@ class Vacation(BaseModel):
     hoursUsed = IntegerField(max_length=1, default=8)
 
 class HolidayCalendar(BaseModel):
-    holidayDate = DateTimeField()
+    holidayDate = DateTimeField(unique=True)
     description = TextField()
 
 def initialize():
@@ -46,6 +46,12 @@ def initialize():
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
+
+def dateToString(dateinput):
+    return datetime.datetime.strftime(dateinput, "%m/%d/%Y")
+
+def stringToDate(datestring):
+    return datetime.datetime.strptime(datestring, "%m/%d/%Y")
 
 def addEmployee():
      clear()
@@ -79,10 +85,13 @@ def dateConvert(datestring):
         print("Error: Incorrect date Format.")
 
 def addHoliday():
-    holidate = input("Enter Date of Holiday --MM/DD/YYYY-- >> ")
-    hrdtF = dateConvert(holidate)
-    holDesc = input('Enter Holiday Description >> ')
-    HolidayCalendar.create(holidayDate=hrdtF, description=holDesc)
+    try:
+        holidate = input("Enter Date of Holiday --MM/DD/YYYY-- >> ")
+        hrdtF = dateConvert(holidate)
+        holDesc = input('Enter Holiday Description >> ')
+        HolidayCalendar.create(holidayDate=hrdtF, description=holDesc)
+    except:
+        print("Date Already Entered or Incorrect Date Format. Try again.\n ")
 
 def viewCalendar():
     for holiday in HolidayCalendar.select():
@@ -90,6 +99,22 @@ def viewCalendar():
         description = holiday.description
         print("{} | {}".format(displayDate.strftime("%m/%d/%Y"), description))
     input("\n\n\nPress Enter When Finished")
+
+def cycleWeekday(dtinput):
+    if dtinput.weekday() < 3:
+        return dtinput += datetime.timedelta(days=1)
+    else:
+        return dtinput += datetime.timedelta(days=3)
+
+def isHoliday(inputDate):
+    try:
+        HolidayCalendar.get(HolidayCalendar.holidayDate == inputDate)
+        return True
+    except:
+        return False
+    
+
+
 
 
 def scheduleVacation():
@@ -103,13 +128,11 @@ def scheduleVacation():
         strtdteF = dateConvert(strtdte)
         countdwn = numdays
         Vacation.create(employeeNumber=empnum, vacationDate=strtdteF, hoursUsed=8)
+        rd = strtdteF
         while countdwn:
             countdwn -= 1
-            if strtdteF.weekday() < 3:
-                strtdteF += datetime.timedelta(days=1)
-            else:
-                strtdteF += datetime.timedelta(days=3)
-            Vacation.create(employeeNumber=empnum, vacationDate=strtdteF, hoursUsed=8)            
+            rd = cycleWeeday(rd)
+            Vacation.create(employeeNumber=empnum, vacationDate=rd, hoursUsed=8)            
     else:
         strtdte = input("Enter Requested Vacation Date > ")
         strtdteF = dateConvert(strtdte)
@@ -132,6 +155,8 @@ def accrualRate(hireDate):
         return .10958904
 
 def accrualCalc(empnum):
-    accrualStart = datetime.datetime(2017, 2, 6)
+
+    preAccrualStart = datetime.datetime(2017, 2, 6)
+    hireDate = HolidayCalendar.get(HolidayCalendar)
 
 
