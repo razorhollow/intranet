@@ -141,6 +141,7 @@ def accrualCalc(empnum):
 #start of App-------------------------------------------------------
 if __name__ == "__main__":
     initialize()
+    scheduleVacation()
     for employee in Employee.select():
         #print("{} {}".format(employee.firstName, employee.lastName))
         #cycle through employee numbers------------
