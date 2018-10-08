@@ -1,0 +1,5 @@
+TODO: create a python script that opens up, retrieves a list of employees
+and employee numbers. Prompts user for employee number.
+Performs sql search for all recorded vacation days. Asks user if they want
+to add more days. runs add function if yes, then prints total accumulated
+days.
