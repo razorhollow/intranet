@@ -12,7 +12,10 @@ preAccrual = {
     66: [3.845, "Saxe"],
     47: [88.286, "Rounds"],
     23: [108.476, "Gaylord_Garan"],
-    64: [5.383, "Williams"]}
+    64: [5.383, "Williams"],
+    58: [80.000, "Drake"],
+    75: [120.000, "Bernard_Paul"]
+    }
 
 db = SqliteDatabase('TimeOff.db')
 
